@@ -1,0 +1,34 @@
+# --- Dépendances Node.js (TRÈS IMPORTANT) ---
+# On ne versionne jamais ce dossier car il est lourd 
+# et peut être réinstallé avec "npm install"
+node_modules/
+
+# --- Logs et fichiers de débogage ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Fichiers système (Windows/Mac/Linux) ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- Fichiers de configuration d'éditeurs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Fichiers d'environnement (Sécurité) ---
+# Contient souvent des mots de passe ou clés API
+.env
+.env.local
+
+# --- Tests générés ---
+# Si tu testes ton outil en créant des sites DANS ce dossier,
+# on les ignore pour ne pas polluer ton git.
+# (Exemple: tout dossier commençant par "test_")
+test_*/
+temp/
