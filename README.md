@@ -8,7 +8,7 @@ Ce projet permet de créer en quelques secondes un squelette de projet web inclu
 
 *   📁 **Structure automatique** : Crée les dossiers `css/`, `js/`, `img/`.
 *   🎨 **Templates au choix** :
-    *   **Site Vide** : HTML/CSS pur.
+    *   **Site Vide** : HTML/CSS/JS pur.
     *   **Bootstrap 5** : CDN inclus + exemple de composant.
     *   **Tailwind CSS** : Script inclus + classes utilitaires.
 *   🦊 **Git Ready** : Lance `git init` et crée un `.gitignore` automatiquement.
@@ -21,4 +21,4 @@ Ce projet permet de créer en quelques secondes un squelette de projet web inclu
 Pas besoin d'installer quoi que ce soit si vous voulez juste l'utiliser. Lancez simplement :
 
 ```bash
-npx [create-mon-site]
+npx create-my-site
