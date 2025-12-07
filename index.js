@@ -2,12 +2,13 @@
 
 import chalk from "chalk";
 import { program } from "commander";
-import { IsProjectNameValid,BuildProjectDir,GenTemplate } from "./utility.js";
+import { IsProjectNameValid,BuildProjectDir,GenTemplate,GitInit } from "./utility.js";
 
 
 function main(projetName, templateName, init){
   BuildProjectDir(projetName);
   GenTemplate(projetName, templateName);
+  GitInit(projetName,init)
 }
 
 program
