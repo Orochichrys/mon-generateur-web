@@ -1,7 +1,15 @@
 #!/usr/bin/env node
 
 import { program } from "commander";
-import { IsProjectNameValid } from "./utility.js";
+import { IsProjectNameValid,BuildProjectDir } from "./utility.js";
+
+
+function main(projetName, templateName, init){
+  /* console.log(`Project Name: ${NameArg}|`);
+  console.log(`Template: ${templateName}|`);
+  console.log(`Init?: ${init}|`); */
+  BuildProjectDir(projetName)
+}
 
 program
   .argument('[name]',"the name of the project")
@@ -22,9 +30,7 @@ if ( NameArg === "" ){ // start interactive setup if no value is passed
 
 } else if ( IsProjectNameValid(NameArg) === true ){ // If the Project is valid start automatic creation
   
-  console.log(`Project Name: ${NameArg}|`);
-  console.log(`Template: ${Template}|`);
-  console.log(`Init?: ${Init}|`)
+  main(NameArg, Template, Init);
 
 } else {
   console.log("Invalid format for the Project Name");
