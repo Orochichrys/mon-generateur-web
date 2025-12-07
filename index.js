@@ -22,13 +22,14 @@ const options = program.opts();
 const Template = options.template.trim()
 const Init = options.init
 
-const Args  = program.args;
-const NameArg = Args[0].trim() // remove trailing and leading whitespace for NameArg
+const [ Arg ] = program.args;
+const NameArg = Arg === undefined ? "" : Arg.trim();
 const AvalaibleTemplates = {
   "bootstrap" : "Bootstrap 5",
   "tailwind" : "Tailwind CSS",
   "empty" : "Site Vide (HTML/CSS/JS basique)" 
 }
+
 
 if ( NameArg === "" ){ // start interactive setup if no value is passed
   console.log(`No name value Passed\nInteractive Mode started`);
