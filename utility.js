@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
+import { execSync } from 'child_process'; // Nécessaire pour lancer git init
 
 export function IsProjectNameValid(ProjectName) {
   const expression = /^([a-z\-\_\d])+$/;
@@ -101,4 +102,30 @@ export function GenTemplate(projectName, template) {
   fs.writeFileSync(path.join(projectDir, "js", "script.js"), jsContent);
 
   console.log(chalk.cyan("📄 Fichiers générés (html, css, js)."));
+}
+
+
+export function GitInit(projectName, init){
+  const currentDir = process.cwd();
+  const projectDir = path.join(currentDir, projectName);
+  if (init) {
+    try {
+      // execSync permet de lancer des commandes terminal
+      execSync('git init', { cwd: projectDir, stdio: 'ignore' }); 
+      console.log(chalk.magenta('🦊 Dépôt Git initialisé avec succès.'));
+      
+      // Petit bonus : créer un .gitignore
+      const gitignoreContent = `node_modules/\n.DS_Store\n`;
+      fs.writeFileSync(path.join(projectDir, '.gitignore'), gitignoreContent);
+
+    } catch (error) {
+      console.log(chalk.yellow('⚠️  Attention : Impossible d\'initialiser Git (Git est-il installé ?).'));
+    }
+  } else {
+    console.log(chalk.magenta('🦊 Initialisation du Dépôt Git Évitée'))
+  }
+
+  console.log(chalk.green.bold('\n✅ Tout est prêt !'));
+  console.log(chalk.white(`   cd ${projectName}`));
+  console.log(chalk.white(`   Ouvre index.html dans ton navigateur !`));
 }
