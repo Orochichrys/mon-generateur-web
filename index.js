@@ -3,7 +3,7 @@
 import chalk from "chalk";
 import { program } from "commander";
 import { IsProjectNameValid,BuildProjectDir,GenTemplate,GitInit } from "./utility.js";
-
+import InteractiveSetup from "./interactive.js";
 
 function main(projetName, templateName, init){
   BuildProjectDir(projetName);
@@ -32,7 +32,7 @@ const AvalaibleTemplates = {
 
 
 if ( NameArg === "" ){ // start interactive setup if no value is passed
-  console.log(`No name value Passed\nInteractive Mode started`);
+  InteractiveSetup()
 
 } else if ( IsProjectNameValid(NameArg) === true ){ // If the Project is valid start automatic creation
   
