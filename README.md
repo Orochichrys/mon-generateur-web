@@ -22,3 +22,4 @@ Pas besoin d'installer quoi que ce soit si vous voulez juste l'utiliser. Lancez 
 
 ```bash
 npx create-my-site
+```
