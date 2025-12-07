@@ -12,9 +12,9 @@ function main(projetName, templateName, init){
 }
 
 program
-  .argument('[name]',"the name of the project")
-  .option('-t, --template <TEMPLATE>',"the template to use","tailwind")
-  .option('--no-init',"deactivate default git init execution",true)
+  .argument('[name]',"le nom du projet")
+  .option('-t, --template <TEMPLATE>',"la template à utilisée","tailwind")
+  .option('--no-init',"désactive l'éxecution automatique de git init",true)
 
 program.parse()
 
@@ -40,9 +40,9 @@ if ( NameArg === "" ){ // start interactive setup if no value is passed
   const realTemplateName = AvalaibleTemplates[Template]
   if (realTemplateName === undefined){
     console.log(
-      chalk.red(`"${Template}" is not an official template name`)
+      chalk.red(`"${Template}" n'est pas une template officiel`)
     );
-    console.log("Avalaible:");
+    console.log("Disponible:");
     console.log(Object.keys(AvalaibleTemplates));
     process.exit(1);
   }
@@ -51,5 +51,11 @@ if ( NameArg === "" ){ // start interactive setup if no value is passed
   main(NameArg, realTemplateName, Init);
 
 } else {
-  console.log("Invalid format for the Project Name");
+  console.log(chalk.red("Le format pour le nom du projet est invalide"));
+  console.log(chalk.magenta("Veuillez à ce que le nom du projet:"))
+  console.log(
+    chalk.bold(`  * Contienne que des lettres mininuscules de 'a' à 'z'
+  * Contienne aucuns caractéres spéciales sauf ('_' et '-')
+  * Contienne des chiffres`)
+  )
 }
