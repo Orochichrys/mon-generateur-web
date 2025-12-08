@@ -13,7 +13,7 @@ Ce projet permet de créer en quelques secondes un squelette de projet web inclu
     *   **Tailwind CSS** : Script inclus + classes utilitaires.
 *   🦊 **Git Ready** : Lance `git init` et crée un `.gitignore` automatiquement.
 *   💻 **Interface Interactive** : Pose des questions simples pour configurer le projet.
-
+*   💻 **Interface CLI** : Que ce soit pour les fanatiques des CLI sans interaction ou pour la vitesse 🚀
 ---
 
 ## 📦 Utilisation Rapide (Utilisateurs)
@@ -22,3 +22,23 @@ Pas besoin d'installer quoi que ce soit si vous voulez juste l'utiliser. Lancez 
 
 ```bash
 npx create-my-site
+```
+
+Envie d'utiliser `create-my-site` pour un script ou juste accélerer la création ?
+
+**Ne vous en faites pas !**
+
+vous pouvez aussi utilisez
+
+```bash
+Usage: create-my-site [options] [name]
+
+Arguments:
+  name                       le nom du projet
+
+Options:
+  -t, --template <TEMPLATE>  la template à utilisée (default: "tailwind")
+  --no-init                  désactive l'éxecution automatique de git init
+  -h, --help                 display help for command
+```
+
