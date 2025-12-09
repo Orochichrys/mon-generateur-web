@@ -2,60 +2,67 @@
 
 import chalk from "chalk";
 import { program } from "commander";
-import { IsProjectNameValid,BuildProjectDir,GenTemplate,GitInit } from "./utility.js";
+import { IsProjectNameValid, BuildProjectDir, GenTemplate, GitInit } from "./utility.js";
 import InteractiveSetup from "./interactive.js";
 
-function main(projetName, templateName, init){
-  BuildProjectDir(projetName);
-  GenTemplate(projetName, templateName);
-  GitInit(projetName,init)
+// Fonction principale qui orchestre la création
+function main(projectName, templateName, init) {
+  BuildProjectDir(projectName);
+  GenTemplate(projectName, templateName);
+  GitInit(projectName, init);
 }
 
+// Configuration de Commander
 program
-  .argument('[name]',"le nom du projet")
-  .option('-t, --template <TEMPLATE>',"la template à utilisée","tailwind")
-  .option('--no-init',"désactive l'éxecution automatique de git init",true)
+  .argument('[name]', "le nom du projet")
+  .option('-t, --template <TEMPLATE>', "le template à utiliser", "tailwind")
+  .option('--no-init', "désactive l'exécution automatique de git init");
 
-program.parse()
+program.parse();
 
 const options = program.opts();
-const Template = options.template.trim()
-const Init = options.init
+const TemplateOption = options.template.trim(); // "bootstrap", "tailwind", etc.
+const InitOption = options.init; // true par défaut, false si --no-init
 
-const [ Arg ] = program.args;
+const [Arg] = program.args;
 const NameArg = Arg === undefined ? "" : Arg.trim();
-const AvalaibleTemplates = {
-  "bootstrap" : "Bootstrap 5",
-  "tailwind" : "Tailwind CSS",
-  "empty" : "Site Vide (HTML/CSS/JS basique)" 
-}
 
+// Mapping entre les noms courts (CLI) et les noms complets (Menu interactif)
+const AvailableTemplates = {
+  "bootstrap": "Bootstrap 5",
+  "tailwind": "Tailwind CSS",
+  "empty": "Site Vide (HTML/CSS/JS basique)"
+};
 
-if ( NameArg === "" ){ // start interactive setup if no value is passed
-  InteractiveSetup()
+// --- Logique de Contrôle ---
 
-} else if ( IsProjectNameValid(NameArg) === true ){ // If the Project is valid start automatic creation
+if (NameArg === "") {
+  // 1. Mode Interactif (si aucun nom n'est donné)
+  InteractiveSetup();
+
+} else if (IsProjectNameValid(NameArg)) {
+  // 2. Mode Automatique (CLI)
   
-  //check if template is an avalaible one
-  const realTemplateName = AvalaibleTemplates[Template]
-  if (realTemplateName === undefined){
-    console.log(
-      chalk.red(`"${Template}" n'est pas une template officiel`)
-    );
-    console.log("Disponible:");
-    console.log(Object.keys(AvalaibleTemplates));
+  // Vérification du template
+  const realTemplateName = AvailableTemplates[TemplateOption];
+  
+  if (realTemplateName === undefined) {
+    console.log(chalk.red(`❌ Erreur : "${TemplateOption}" n'est pas un template officiel.`));
+    console.log(chalk.yellow("Templates disponibles :"));
+    // Affiche les clés (bootstrap, tailwind, empty)
+    Object.keys(AvailableTemplates).forEach(t => console.log(`- ${t}`));
     process.exit(1);
   }
 
-  // run main when everything is ok
-  main(NameArg, realTemplateName, Init);
+  // Lancement
+  main(NameArg, realTemplateName, InitOption);
 
 } else {
-  console.log(chalk.red("Le format pour le nom du projet est invalide"));
-  console.log(chalk.magenta("Veuillez à ce que le nom du projet:"))
-  console.log(
-    chalk.bold(`  * Contienne que des lettres mininuscules de 'a' à 'z'
-  * Contienne aucuns caractéres spéciales sauf ('_' et '-')
-  * Contienne des chiffres`)
-  )
+  // 3. Erreur de format du nom
+  console.log(chalk.red("❌ Le format du nom du projet est invalide."));
+  console.log(chalk.magenta("Règles pour le nom :"));
+  console.log(chalk.bold(`  * Uniquement des minuscules (a-z)
+  * Pas de caractères spéciaux (sauf '_' et '-')
+  * Chiffres autorisés`));
+  process.exit(1);
 }

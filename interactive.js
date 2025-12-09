@@ -8,6 +8,8 @@ import {
 } from "./utility.js";
 
 export default function InteractiveSetup() {
+  console.log(chalk.blue.bold("🚀 Générateur de Site Web Ultime"));
+
   const questions = [
     {
       type: "input",
@@ -20,7 +22,7 @@ export default function InteractiveSetup() {
       },
     },
     {
-      type: "rawlist", // Changement ici : une liste de choix
+      type: "rawlist",
       name: "template",
       message: "Quel template veux-tu utiliser ?",
       choices: [
@@ -36,23 +38,17 @@ export default function InteractiveSetup() {
       default: true,
     },
   ];
-  console.log(chalk.blue.bold("🚀 Générateur de Site Web Ultime"));
+
   inquirer.prompt(questions).then((answers) => {
     const { projectName, template, gitInit } = answers;
 
-    // ---------------------------------------------------------
-    // 1. CRÉATION DE LA STRUCTURE DE DOSSIERS
-    // ---------------------------------------------------------
-    BuildProjectDir(projectName);
-
-    // ---------------------------------------------------------
-    // 2. GÉNÉRATION DU CONTENU SELON LE TEMPLATE
-    // ---------------------------------------------------------
-    GenTemplate(projectName, template);
-
-    // ---------------------------------------------------------
-    // 3. INITIALISATION GIT
-    // ---------------------------------------------------------
-    GitInit(projectName, gitInit);
+    // On exécute les fonctions utilitaires séquentiellement
+    try {
+      BuildProjectDir(projectName);
+      GenTemplate(projectName, template);
+      GitInit(projectName, gitInit);
+    } catch (error) {
+      console.log(chalk.red("Une erreur est survenue : " + error.message));
+    }
   });
 }

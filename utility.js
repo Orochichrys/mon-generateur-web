@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
-import { execSync } from 'child_process'; // Nécessaire pour lancer git init
+import { execSync } from 'child_process';
 
 export function IsProjectNameValid(ProjectName) {
+  // Regex : permet minuscules, chiffres, tirets, underscores
   const expression = /^([a-z\-\_\d])+$/;
   return expression.test(ProjectName);
 }
@@ -12,31 +13,30 @@ export function BuildProjectDir(projectName) {
   const currentDir = process.cwd();
   const projectDir = path.join(currentDir, projectName);
 
-  // ---------------------------------------------------------
-  // 1. CRÉATION DE LA STRUCTURE DE DOSSIERS
-  // ---------------------------------------------------------
   if (fs.existsSync(projectDir)) {
     console.log(chalk.red("❌ Ce dossier existe déjà."));
     process.exit(1);
   }
 
+  // Création récursive non nécessaire ici car structure plate, mais bonne pratique
   fs.mkdirSync(projectDir);
-  fs.mkdirSync(path.join(projectDir, "css")); // Dossier CSS
-  fs.mkdirSync(path.join(projectDir, "js")); // Dossier JS
-  fs.mkdirSync(path.join(projectDir, "img")); // Dossier IMG
+  fs.mkdirSync(path.join(projectDir, "css"));
+  fs.mkdirSync(path.join(projectDir, "js"));
+  fs.mkdirSync(path.join(projectDir, "img"));
 
-  console.log(
-    chalk.green(`📁 Structure créée : ${projectName}/ (css, js, img)`)
-  );
+  console.log(chalk.green(`📁 Structure créée : ${projectName}/ (css, js, img)`));
 }
 
 export function GenTemplate(projectName, template) {
   const currentDir = process.cwd();
   const projectDir = path.join(currentDir, projectName);
+  
   let headContent = "";
   let bodyContent = "";
   let cssContent = "";
 
+  // Note : Les chaînes ici doivent correspondre exactement aux 'choices' de interactive.js
+  // et aux valeurs de AvailableTemplates dans index.js
   switch (template) {
     case "Bootstrap 5":
       headContent = `<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">`;
@@ -46,10 +46,10 @@ export function GenTemplate(projectName, template) {
         <div class="alert alert-primary" role="alert">
             Bootstrap 5 est installé et fonctionnel !
         </div>
-        <button class="btn btn-success">Un bouton Bootstrap</button>
+        <button class="btn btn-success">Bouton Bootstrap</button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>`;
-      cssContent = `/* Tes styles perso ici (après Bootstrap) */\nbody { background-color: #f8f9fa; }`;
+      cssContent = `/* Styles perso après Bootstrap */\nbody { background-color: #f8f9fa; }`;
       break;
 
     case "Tailwind CSS":
@@ -64,19 +64,19 @@ export function GenTemplate(projectName, template) {
             Bouton Tailwind
         </button>
     </div>`;
-      cssContent = `/* Tes styles perso ici (si besoin) */\n@tailwind base;\n@tailwind components;\n@tailwind utilities;`;
+      cssContent = `/* Tes styles perso ici */\n@tailwind base;\n@tailwind components;\n@tailwind utilities;`;
       break;
 
-    default: // Site Vide
+    default: // Site Vide (HTML/CSS/JS basique)
       headContent = "";
       bodyContent = `
     <h1>Bienvenue sur ${projectName}</h1>
-    <p>Ceci est un site basique.</p>`;
+    <p>Site généré avec succès.</p>`;
       cssContent = `body {\n    font-family: sans-serif;\n    padding: 20px;\n    background-color: #f0f0f0;\n}`;
       break;
   }
 
-  // Création du fichier index.html
+  // Création index.html
   const finalHtml = `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -93,36 +93,35 @@ export function GenTemplate(projectName, template) {
 </html>`;
 
   fs.writeFileSync(path.join(projectDir, "index.html"), finalHtml);
-
-  // Création du fichier CSS (dans le dossier css/)
+  
+  // Création CSS
   fs.writeFileSync(path.join(projectDir, "css", "style.css"), cssContent);
-
-  // Création du fichier JS (dans le dossier js/)
+  
+  // Création JS
   const jsContent = `console.log('Script chargé pour ${projectName}');`;
   fs.writeFileSync(path.join(projectDir, "js", "script.js"), jsContent);
 
   console.log(chalk.cyan("📄 Fichiers générés (html, css, js)."));
 }
 
-
-export function GitInit(projectName, init){
+export function GitInit(projectName, init) {
   const currentDir = process.cwd();
   const projectDir = path.join(currentDir, projectName);
+
   if (init) {
     try {
-      // execSync permet de lancer des commandes terminal
-      execSync('git init', { cwd: projectDir, stdio: 'ignore' }); 
-      console.log(chalk.magenta('🦊 Dépôt Git initialisé avec succès.'));
-      
-      // Petit bonus : créer un .gitignore
-      const gitignoreContent = `node_modules/\n.DS_Store\n`;
-      fs.writeFileSync(path.join(projectDir, '.gitignore'), gitignoreContent);
+      // stdio: 'ignore' empêche git d'afficher son blabla dans le terminal
+      execSync('git init', { cwd: projectDir, stdio: 'ignore' });
+      console.log(chalk.magenta('🦊 Dépôt Git initialisé.'));
 
+      // Création du .gitignore
+      const gitignoreContent = `node_modules/\n.DS_Store\n.env\n`;
+      fs.writeFileSync(path.join(projectDir, '.gitignore'), gitignoreContent);
     } catch (error) {
-      console.log(chalk.yellow('⚠️  Attention : Impossible d\'initialiser Git (Git est-il installé ?).'));
+      console.log(chalk.yellow("⚠️ Impossible d'initialiser Git (est-il installé ?)."));
     }
   } else {
-    console.log(chalk.magenta('🦊 Initialisation du Dépôt Git Évitée'))
+    console.log(chalk.gray('ℹ️  Initialisation Git ignorée.'));
   }
 
   console.log(chalk.green.bold('\n✅ Tout est prêt !'));
