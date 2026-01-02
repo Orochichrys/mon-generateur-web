@@ -1,3 +1,7 @@
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg?style=flat-square)](./LICENSE)
+[![npm version](https://img.shields.io/npm/v/create-my-site.svg?style=flat-square)](https://www.npmjs.com/package/create-my-site)
+[![Node.js](https://img.shields.io/node/v/create-my-site?style=flat-square)](https://www.npmjs.com/package/create-my-site)
+
 # 🚀 Générateur de Site Web (CLI)
 
 > Un outil en ligne de commande (CLI) ultra-rapide pour générer des structures de sites web modernes.
@@ -41,4 +45,9 @@ Options:
   --no-init                  désactive l'éxecution automatique de git init
   -h, --help                 display help for command
 ```
+
+## 📄 Licence
+
+Ce projet est sous licence **ISC**.  
+Voir le fichier [LICENSE](./LICENSE) pour plus de détails.
 
