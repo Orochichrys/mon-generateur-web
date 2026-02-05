@@ -1,6 +1,6 @@
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg?style=flat-square)](./LICENSE)
 [![npm version](https://img.shields.io/npm/v/create-my-site.svg?style=flat-square)](https://www.npmjs.com/package/create-my-site)
-[![Node.js](https://img.shields.io/node/v/create-my-site?style=flat-square)](https://www.npmjs.com/package/create-my-site)
+[![Node.js](https://img.shields.io/badge/node-v20.5.1-brightgreen?style=flat-square)](https://nodejs.org/)
 
 # 🚀 Générateur de Site Web (CLI)
 
