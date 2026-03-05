@@ -2,27 +2,43 @@
 
 import chalk from "chalk";
 import { program } from "commander";
-import { IsProjectNameValid, BuildProjectDir, GenTemplate, GitInit } from "./utility.js";
+import { IsProjectNameValid, BuildProjectDir, GenTemplate, GenReadme, GitInit, handleGitPush } from "./utility.js";
 import InteractiveSetup from "./interactive.js";
 
 // Fonction principale qui orchestre la création
-function main(projectName, templateName, init) {
+async function main(projectName, templateName, options) {
+  const { gitInit, darkMode, push, local, token } = options;
+  
   BuildProjectDir(projectName);
-  GenTemplate(projectName, templateName);
-  GitInit(projectName, init);
+  await GenTemplate(projectName, templateName, { darkMode, local });
+  GenReadme(projectName, templateName);
+  GitInit(projectName, gitInit);
+  
+  // Nouvelle fonctionnalité Auto-Push
+  if (push) {
+    await handleGitPush(projectName, push, token);
+  }
 }
 
 // Configuration de Commander
 program
   .argument('[name]', "le nom du projet")
   .option('-t, --template <TEMPLATE>', "le template à utiliser", "tailwind")
-  .option('--no-init', "désactive l'exécution automatique de git init");
+  .option('--no-init', "désactive l'exécution automatique de git init")
+  .option('--dark', "génère un boilerplate en mode sombre", false)
+  .option('--push', "crée un dépôt GitHub et push immédiatement", false)
+  .option('--local', "télécharge les assets (Bootstrap) pour usage offline", false)
+  .option('--token <TOKEN>', "GitHub Token pour pusher sans 'gh' CLI");
 
 program.parse();
 
 const options = program.opts();
 const TemplateOption = options.template.trim(); // "bootstrap", "tailwind", etc.
 const InitOption = options.init; // true par défaut, false si --no-init
+const DarkOption = options.dark;
+const PushOption = options.push;
+const LocalOption = options.local;
+const TokenOption = options.token;
 
 const [Arg] = program.args;
 const NameArg = Arg === undefined ? "" : Arg.trim();
@@ -55,7 +71,13 @@ if (NameArg === "") {
   }
 
   // Lancement
-  main(NameArg, realTemplateName, InitOption);
+  await main(NameArg, realTemplateName, { 
+    gitInit: InitOption, 
+    darkMode: DarkOption, 
+    push: PushOption,
+    local: LocalOption,
+    token: TokenOption
+  });
 
 } else {
   // 3. Erreur de format du nom

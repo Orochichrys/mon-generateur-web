@@ -1,53 +1,52 @@
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg?style=flat-square)](./LICENSE)
-[![npm version](https://img.shields.io/npm/v/create-my-site.svg?style=flat-square)](https://www.npmjs.com/package/create-my-site)
-[![Node.js](https://img.shields.io/badge/node-v20.5.1-brightgreen?style=flat-square)](https://nodejs.org/)
+# 🚀 CMS Generator (Create My Site)
 
-# 🚀 Générateur de Site Web (CLI)
+> Un outil en ligne de commande (CLI) ultra-rapide pour générer des structures de sites web professionnelles.
 
-> Un outil en ligne de commande (CLI) ultra-rapide pour générer des structures de sites web modernes.
+Version: **v1.2.0**
 
-Ce projet permet de créer en quelques secondes un squelette de projet web incluant HTML, CSS, JS, et des dossiers pré-organisés. Il supporte également l'intégration automatique de **Bootstrap**, **Tailwind CSS** et l'initialisation **Git**.
+Ce projet permet de créer en quelques secondes un squelette de projet web incluant HTML, CSS, JS, et des dossiers optimisés. Il supporte également l'intégration de **Bootstrap**, **Tailwind CSS**, le **Mode Sombre**, le **SEO automatique** et le **Push GitHub**.
 
-## ✨ Fonctionnalités
+## ✨ Fonctionnalités v1.2.0
 
-*   📁 **Structure automatique** : Crée les dossiers `css/`, `js/`, `img/`.
-*   🎨 **Templates au choix** :
-    *   **Site Vide** : HTML/CSS/JS pur.
-    *   **Bootstrap 5** : CDN inclus + exemple de composant.
-    *   **Tailwind CSS** : Script inclus + classes utilitaires.
-*   🦊 **Git Ready** : Lance `git init` et crée un `.gitignore` automatiquement.
-*   💻 **Interface Interactive** : Pose des questions simples pour configurer le projet.
-*   💻 **Interface CLI** : Que ce soit pour les fanatiques des CLI sans interaction ou pour la vitesse 🚀
+- 📁 **Structure Professionnelle** : Dossiers organisés dans `/assets` (`css/`, `js/`, `img/`, `vendor/`).
+- 🔍 **SEO & Open Graph** : Balises Meta et OG-Tags pré-configurés pour le partage social.
+- 🌗 **Mode Sombre** : Support natif du mode sombre pour Tailwind et Bootstrap.
+- 🎨 **Templates au choix** :
+  - **Tailwind CSS** : Script inclus + design moderne et responsive.
+  - **Bootstrap 5** : CDN inclus + personnalisation thématique.
+  - **Site Vide** : HTML/CSS/JS pur avec structure assets.
+- 🦊 **Git Ready** : Initialisation `git init` et `.gitignore` par défaut.
+- 🐙 **Auto-Push GitHub** : Crée un dépôt et push le code immédiatement (nécessite `gh`).
+
 ---
 
-## 📦 Utilisation Rapide (Utilisateurs)
+## 📦 Utilisation
 
-Pas besoin d'installer quoi que ce soit si vous voulez juste l'utiliser. Lancez simplement :
+Lancez simplement l'outil sans installation préalable :
 
 ```bash
 npx create-my-site
 ```
 
-Envie d'utiliser `create-my-site` pour un script ou juste accélerer la création ?
+### Options du CLI
 
-**Ne vous en faites pas !**
-
-vous pouvez aussi utilisez
+Pour les habitués du terminal, vous pouvez passer des arguments directement :
 
 ```bash
-Usage: create-my-site [options] [name]
+Usage: create-my-site [name] [options]
 
 Arguments:
-  name                       le nom du projet
+  name                       Le nom de votre projet
 
 Options:
-  -t, --template <TEMPLATE>  la template à utilisée (default: "tailwind")
-  --no-init                  désactive l'éxecution automatique de git init
-  -h, --help                 display help for command
+  -t, --template <TEMPLATE>  Le template à utiliser (tailwind|bootstrap|empty)
+  --no-init                  Désactive l'initialisation Git
+  --dark                     Génère un boilerplate en mode sombre
+  --push                     Crée un dépôt GitHub et push immédiatement
+  -h, --help                 Affiche l'aide
 ```
 
 ## 📄 Licence
 
 Ce projet est sous licence **ISC**.  
 Voir le fichier [LICENSE](./LICENSE) pour plus de détails.
-
