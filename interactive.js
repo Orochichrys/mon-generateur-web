@@ -1,20 +1,16 @@
 import chalk from "chalk";
 import inquirer from "inquirer";
-import {
-  IsProjectNameValid,
-  BuildProjectDir,
-  GenTemplate,
-  GenReadme,
-  GitInit,
-  handleGitPush,
-  checkCommand,
-  loadToken,
-} from "./utility.js";
+import path from "path";
+import { VERSION } from "./src/constants.js";
+import { IsProjectNameValid, BuildProjectDir, checkCommand, loadToken } from "./src/helpers.js";
+import { GenTemplate, GenReadme } from "./src/template.js";
+import { GitInit, handleGitPush } from "./src/git.js";
+import { startLivePreview } from "./src/server.js";
 
-export default function InteractiveSetup() {
+export default async function InteractiveSetup() {
   const hasGH = checkCommand("gh");
   const hasToken = loadToken();
-  console.log(chalk.blue.bold("\n🚀 CMS Generator v1.2.0 - Configuration Interactive\n"));
+  console.log(chalk.blue.bold(`\n🚀 CREATE MY SITE v${VERSION} - Configuration Interactive\n`));
 
   const questions = [
     {
@@ -67,22 +63,46 @@ export default function InteractiveSetup() {
       default: false,
       when: (answers) => answers.gitInit === true,
     },
+    {
+      type: "confirm",
+      name: "serve",
+      message: "Lancer le serveur de prévisualisation (Live Preview) ?",
+      default: true,
+    }
   ];
 
-  inquirer.prompt(questions).then(async (answers) => {
-    const { projectName, template, darkMode, gitInit, gitPush, local } = answers;
+  try {
+    const answers = await inquirer.prompt(questions);
+    const { projectName, template, darkMode, gitInit, gitPush, local, serve } = answers;
 
-    try {
-      BuildProjectDir(projectName);
-      await GenTemplate(projectName, template, { darkMode, local });
-      GenReadme(projectName, template);
-      GitInit(projectName, gitInit);
-      
-      if (gitPush) {
-        await handleGitPush(projectName, gitPush);
-      }
-    } catch (error) {
+    BuildProjectDir(projectName);
+    await GenTemplate(projectName, template, VERSION, { darkMode, local });
+    GenReadme(projectName, template, VERSION);
+    GitInit(projectName, gitInit);
+    
+    if (gitPush) {
+      await handleGitPush(projectName, gitPush, VERSION);
+    }
+
+    console.log(chalk.green.bold(`\n✅ Projet "${projectName}" prêt avec succès !`));
+    console.log(chalk.cyan(`\nProchaines étapes :`));
+    console.log(chalk.white(`  1. Accéder au dossier : `) + chalk.yellow(`cd ${projectName}`));
+    console.log(chalk.white(`  2. Lancer le serveur plus tard : `) + chalk.yellow(`npx create-my-site serve`));
+
+    if (serve) {
+      const targetPath = path.resolve(process.cwd(), projectName);
+      startLivePreview(targetPath);
+    } else {
+      console.log(chalk.blue.bold(`\n✨ Bonne création avec CREATE MY SITE ! 🚀\n`));
+    }
+  } catch (error) {
+    if (error.isTtyError) {
+      console.log(chalk.red("\n❌ Impossible de lancer le prompt dans cet environnement."));
+    } else if (error.message.includes('force closed')) {
+      console.log(chalk.yellow("\n👋 Opération annulée par l'utilisateur."));
+    } else {
       console.log(chalk.red("\n❌ Une erreur est survenue : " + error.message));
     }
-  });
+    process.exit(0);
+  }
 }
