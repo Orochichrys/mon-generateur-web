@@ -2,11 +2,11 @@
 
 > Un outil en ligne de commande (CLI) ultra-rapide pour générer des structures de sites web professionnelles.
 
-Version: **v1.2.1**
+Version: **v1.3.0**
 
 Ce projet permet de créer en quelques secondes un squelette de projet web incluant HTML, CSS, JS, et des dossiers optimisés. Il supporte également l'intégration de **Bootstrap**, **Tailwind CSS**, le **Mode Sombre**, le **SEO automatique** et le **Push GitHub**.
 
-## ✨ Fonctionnalités v1.2.1
+## ✨ Fonctionnalités v1.3.0
 
 - 📁 **Structure Professionnelle** : Dossiers organisés dans `/assets` (`css/`, `js/`, `img/`, `vendor/`).
 - 🔍 **SEO & Open Graph** : Balises Meta et OG-Tags pré-configurés pour le partage social.
@@ -27,7 +27,14 @@ Ce projet permet de créer en quelques secondes un squelette de projet web inclu
 Lancez simplement l'outil sans installation préalable :
 
 ```bash
-npx create-my-site
+# Pour utiliser la toute dernière version (recommandé)
+npx create-my-site@latest
+
+# Pour utiliser l'ancienne version v1.2.1
+npx create-my-site@1.2.1
+
+# Pour utiliser la première version v1.0.0
+npx create-my-site@1.0.0
 ```
 
 ### Lancer le serveur sur un projet existant
