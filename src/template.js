@@ -1,25 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
-import https from 'https';
 
 async function downloadFile(url, dest) {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(dest);
-    https.get(url, (response) => {
-      if (response.statusCode !== 200) {
-        reject(new Error(`Failed to download ${url}: ${response.statusCode}`));
-        return;
-      }
-      response.pipe(file);
-      file.on("finish", () => {
-        file.close(resolve);
-      });
-    }).on("error", (err) => {
-      fs.unlink(dest, () => {});
-      reject(err);
-    });
-  });
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.statusText}`);
+  const arrayBuffer = await res.arrayBuffer();
+  fs.writeFileSync(dest, Buffer.from(arrayBuffer));
 }
 
 export function GenReadme(projectName, template, version) {
@@ -58,150 +45,305 @@ export async function GenTemplate(projectName, template, version, options = {}) 
   let headContent = "";
   let bodyContent = "";
   let cssContent = "";
-  let htmlClass = darkMode ? ' class="dark"' : "";
-  let bodyAttr = darkMode ? ' data-bs-theme="dark"' : "";
 
-  const BOOTSTRAP_CSS_URL = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css";
-  const BOOTSTRAP_JS_URL = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js";
+  const BOOTSTRAP_CSS_URL = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
+  const BOOTSTRAP_JS_URL = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js";
+  const TAILWIND_JS_URL = "https://cdn.tailwindcss.com";
+
+  // Common CSS parts (Animations, Fonts, etc.)
+  const commonStyles = `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;900&display=swap');
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-deep: #050505;
+    --cyan-neon: #00d2ff;
+    --violet-neon: #9d50bb;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+body {
+    background-color: var(--bg-deep) !important;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(157, 80, 187, 0.15), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(0, 210, 255, 0.15), transparent 25%);
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(var(--glass-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
+    background-size: 30px 30px;
+    z-index: -1;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 3rem;
+    text-align: center;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    max-width: 600px;
+    width: 90%;
+    position: relative;
+    z-index: 1;
+}
+
+h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    letter-spacing: -2px;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--cyan-neon), var(--violet-neon));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.subtitle {
+    color: #a0a0a0;
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+}
+
+.btn-cyber {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    padding: 1rem 2.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.btn-cyber::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: all 0.5s ease;
+}
+
+.btn-cyber:hover {
+    border-color: var(--cyan-neon);
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.1);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-cyber:hover::before {
+    left: 100%;
+}
+
+.code-box {
+    margin-top: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: monospace;
+    color: var(--cyan-neon);
+    font-size: 0.9rem;
+}
+
+.badge-cyber {
+    background: rgba(157, 80, 187, 0.15);
+    color: var(--violet-neon);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(157, 80, 187, 0.3);
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+
+.plus-sep {
+    display: block;
+    font-size: 2rem;
+    line-height: 1;
+    margin: 0.2rem 0;
+    background: linear-gradient(135deg, var(--cyan-neon), var(--violet-neon));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .glass-card {
+        padding: 2rem 1.5rem;
+        width: 95%;
+    }
+    h1 {
+        font-size: 2.5rem;
+        letter-spacing: -1px;
+    }
+    .btn-cyber {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+    }
+    .subtitle {
+        font-size: 1rem;
+    }
+}`;
 
   switch (template) {
     case "Bootstrap 5":
       let bsCss = local ? "assets/vendor/bootstrap.min.css" : BOOTSTRAP_CSS_URL;
-      let bsJs = local ? "assets/vendor/bootstrap.bundle.min.js" : BOOTSTRAP_JS_URL;
-
       if (local) {
-        console.log(chalk.yellow("📦 Téléchargement de Bootstrap pour usage local..."));
         try {
           await downloadFile(BOOTSTRAP_CSS_URL, path.join(vendorDir, "bootstrap.min.css"));
           await downloadFile(BOOTSTRAP_JS_URL, path.join(vendorDir, "bootstrap.bundle.min.js"));
         } catch (error) {
-          console.log(chalk.red("❌ Échec du téléchargement local. Utilisation du CDN."));
           bsCss = BOOTSTRAP_CSS_URL;
-          bsJs = BOOTSTRAP_JS_URL;
         }
       }
 
       headContent = `<link href="${bsCss}" rel="stylesheet">`;
       bodyContent = `
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg border-bottom ${darkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-white shadow-sm'}">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">${projectName}</a>
+    <div class="glass-card">
+        <div class="badge-cyber">v${version} • Cyber-Elegance</div>
+
+        <h1 class="mb-3">
+            <a href="https://create-my-site-docs.vercel.app/" style="color: inherit; text-decoration: none;">Create My Site</a>
+            <span class="plus-sep">+</span>
+            <a href="https://getbootstrap.com/" target="_blank" style="text-decoration: none;"><span class="text-gradient">Bootstrap</span></a>
+        </h1>
+        
+        <p class="subtitle mb-4">Scaffolder Ready. Stop configuring, start creating.</p>
+
+        <button id="counter" class="btn-cyber w-100 mb-4">
+            Initiate Sequence: <span id="count-val">0</span>
+        </button>
+        
+        <div class="code-box text-center">
+            Edit <code>assets/js/script.js</code>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="py-5 text-center bg-light border-bottom ${darkMode ? 'bg-dark text-white border-secondary' : ''}">
-        <div class="container py-5">
-            <h1 class="display-4 fw-bold mb-4">Bienvenue sur votre nouveau projet</h1>
-            <p class="lead mb-5 text-muted">Ce site a été généré avec <strong>CREATE MY SITE</strong>. <br> Prêt pour le déploiement immédiat.</p>
-            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Commencer</button>
-                <button type="button" class="btn btn-outline-secondary btn-lg px-4">Documentation</button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Content / Features -->
-    <main class="container py-5">
-        <div class="row g-4 py-5 justify-content-center">
-            <div class="col-md-6">
-                <div class="card h-100 shadow-sm border-0 rounded-4 ${darkMode ? 'bg-secondary bg-opacity-10 text-white' : ''}">
-                    <div class="card-body p-5">
-                        <div class="mb-3 d-inline-flex p-3 bg-primary bg-opacity-10 rounded-3">
-                            <svg class="text-primary" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-                        </div>
-                        <h2 class="h4 fw-bold">Bootstrap 5 ${local ? '(Offline)' : '(CDN)'}</h2>
-                        <p class="card-text text-muted">Structure robuste, composants réactifs et thèmes personnalisables. Vous êtes sur la branche <code>main</code> active.</p>
-                        <a href="#" class="text-decoration-none fw-semibold">En savoir plus &rarr;</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="py-4 border-top text-center text-muted">
-        <p>&copy; 2026 ${projectName} &middot; Fait avec CREATE MY SITE</p>
-    </footer>
-
-    <script src="${bsJs}"></script>`;
-      cssContent = `/* Styles personnalisés */\nbody { font-family: 'Inter', system-ui, -apple-system, sans-serif; }`;
+    </div>`;
+      cssContent = commonStyles;
       break;
 
     case "Tailwind CSS":
-      headContent = `<script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              primary: '#3b82f6',
-            }
-          }
+      let twJs = local ? "assets/vendor/tailwindcss.js" : TAILWIND_JS_URL;
+      if (local) {
+        try {
+          await downloadFile(TAILWIND_JS_URL, path.join(vendorDir, "tailwindcss.js"));
+        } catch (error) {
+          twJs = TAILWIND_JS_URL;
         }
       }
-    </script>`;
+
+      headContent = `<script src="${twJs}"></script>
+    <script src="assets/js/tailwind.config.js"></script>`;
       bodyContent = `
-    <!-- Navbar -->
-    <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <span class="text-xl font-bold text-slate-900 dark:text-white">${projectName}</span>
+    <!-- Mesh Background -->
+    <div class="absolute inset-0 z-0 bg-mesh"></div>
+    <!-- Grid Background -->
+    <div class="absolute inset-0 z-0 bg-grid-pattern bg-grid"></div>
+
+    <!-- Container central -->
+    <div class="relative z-10 min-h-screen flex flex-col items-center justify-center p-4 w-full">
+        <!-- Glass Card -->
+        <div class="w-[95%] md:w-[90%] max-w-[600px] bg-white/5 border border-white/10 backdrop-blur-md rounded-3xl p-6 md:p-12 text-center shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+            
+            <div class="inline-block bg-[rgba(157,80,187,0.15)] text-[--violet-neon] px-4 py-1.5 rounded-full text-sm font-semibold border border-[rgba(157,80,187,0.3)] mb-6">
+                v${version} • Cyber-Elegance
             </div>
-        </div>
-    </nav>
 
-    <!-- Hero Section -->
-    <header class="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 py-20 text-center">
-        <div class="max-w-4xl mx-auto px-4">
-            <h1 class="text-5xl font-extrabold text-slate-900 dark:text-white mb-6">Bienvenue sur votre nouveau projet</h1>
-            <p class="text-xl text-slate-600 dark:text-slate-400 mb-10">Ce site a été généré avec <span class="font-bold text-blue-600 dark:text-blue-400">CREATE MY SITE</span>. <br> Prêt pour le déploiement immédiat.</p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition duration-300 shadow-lg">Commencer</button>
-                <button class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold py-3 px-8 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">Documentation</button>
+            <h1 class="font-display text-4xl md:text-5xl font-black leading-tight mb-4 tracking-[-2px]">
+                <a href="https://create-my-site-docs.vercel.app/" style="color: inherit; text-decoration: none;">Create My Site</a>
+                <span class="plus-sep">+</span>
+                <a href="https://tailwindcss.com/" target="_blank" style="text-decoration: none;"><span class="text-gradient">Tailwind</span></a>
+            </h1>
+            
+            <p class="text-[#a0a0a0] text-lg mb-10">Scaffolder Ready. Stop configuring, start creating.</p>
+
+            <button id="counter" class="btn-cyber relative overflow-hidden bg-white/5 border border-white/10 text-white font-display font-bold text-base md:text-xl py-3 px-6 md:py-4 md:px-10 rounded-xl block w-full">
+                Initiate Sequence: <span id="count-val">0</span>
+            </button>
+            
+            <div class="code-box text-center mt-8">
+                Edit <code>assets/js/script.js</code>
             </div>
-        </div>
-    </header>
-
-    <!-- Content / Features -->
-    <main class="max-w-7xl mx-auto py-20 px-4">
-        <div class="flex justify-center">
-            <div class="max-w-lg w-full bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-10 transform hover:scale-[1.02] transition duration-300">
-                <div class="inline-flex p-4 bg-blue-100 dark:bg-blue-900/30 rounded-2xl mb-6">
-                    <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                </div>
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Tailwind CSS (Zero-Build)</h2>
-                <p class="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">Framework utilitaire pour une liberté totale de design. Votre site est structuré avec élégance. Branche <code>main</code> active.</p>
-                <a href="#" class="text-blue-600 dark:text-blue-400 font-bold hover:underline inline-flex items-center">
-                    En savoir plus <span class="ml-2">&rarr;</span>
-                </a>
-            </div>
-        </div>
-    </main>
-
-    <footer class="py-10 border-t border-slate-200 dark:border-slate-800 text-center text-slate-500 dark:text-slate-400">
-        <p>&copy; 2026 ${projectName} &middot; Fait avec CREATE MY SITE</p>
-    </footer>`;
-      cssContent = `/* Styles personnalisés */\n@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\nbody { font-family: 'Inter', system-ui, sans-serif; }`;
-      break;
-
-    default: // Site Vide
-      headContent = "";
-      bodyContent = `
-    <div style="max-width: 600px; margin: 100px auto; text-align: center; font-family: system-ui, sans-serif;">
-        <h1 style="color: #333;">Bienvenue sur ${projectName}</h1>
-        <p style="color: #666; font-size: 1.2rem;">Ton site statique a été généré avec succès.</p>
-        <div style="margin-top: 30px; padding: 20px; background: #eee; border-radius: 8px;">
-            <code>Édite assets/js/script.js pour commencer</code>
         </div>
     </div>`;
-      cssContent = `body {\n    font-family: sans-serif;\n    padding: 0;\n    margin: 0;\n    background-color: ${darkMode ? '#121212' : '#ffffff'};\n    color: ${darkMode ? '#e0e0e0' : '#1a1a1a'};\n}`;
+      cssContent = `${commonStyles}`;
+      break;
+
+    case "Site Vide (HTML/CSS/JS basique)":
+      headContent = ``;
+      bodyContent = `
+    <div class="glass-card">
+        <div class="badge-cyber">v${version} • Cyber-Elegance</div>
+
+        <h1 style="margin-bottom: 1rem;">
+            <a href="https://create-my-site-docs.vercel.app/" style="color: inherit; text-decoration: none;">Create My Site</a>
+            <span class="plus-sep">+</span>
+            <a href="https://developer.mozilla.org/" target="_blank" style="text-decoration: none;"><span class="text-gradient">Pure HTML/CSS/JS</span></a>
+        </h1>
+        
+        <p class="subtitle" style="margin-bottom: 2rem;">Scaffolder Ready. Stop configuring, start creating.</p>
+
+        <button id="counter" class="btn-cyber" style="width: 100%; margin-bottom: 2rem;">
+            Initiate Sequence: <span id="count-val">0</span>
+        </button>
+        
+        <div class="code-box" style="text-align: center;">
+            Edit <code>assets/js/script.js</code>
+        </div>
+    </div>`;
+      cssContent = `${commonStyles}`;
       break;
   }
 
+  let htmlAttributes = 'lang="fr"';
+  if (darkMode) {
+    if (template === "Bootstrap 5") {
+      htmlAttributes += ' data-bs-theme="dark"';
+    } else if (template === "Tailwind CSS") {
+      htmlAttributes += ' class="dark"';
+    } else {
+      htmlAttributes += ' data-theme="dark"';
+    }
+  }
+
   const finalHtml = `<!DOCTYPE html>
-<html lang="fr"${htmlClass}>
+<html ${htmlAttributes}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -223,17 +365,57 @@ export async function GenTemplate(projectName, template, version, options = {}) 
     ${headContent}
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body${bodyAttr}>
+<body>
     ${bodyContent}
     <script src="assets/js/script.js"></script>
 </body>
 </html>`;
-
   fs.writeFileSync(path.join(projectDir, "index.html"), finalHtml);
   fs.writeFileSync(path.join(projectDir, "assets", "css", "style.css"), cssContent);
   
-  const jsContent = `/**\n * Script pour ${projectName}\n * Généré par CREATE MY SITE v${version}\n */\nconsole.log('🚀 Site chargé avec succès !');`;
+  const jsContent = `document.addEventListener('DOMContentLoaded', () => {
+  let count = 0;
+  const button = document.querySelector('#counter');
+  const countVal = document.querySelector('#count-val');
+
+  const updateCounter = () => {
+    count++;
+    if (countVal) {
+        countVal.textContent = count;
+    } else {
+        button.innerHTML = \`Le compteur est à \${count}\`;
+    }
+  };
+
+  button.addEventListener('click', updateCounter);
+
+  console.log("🚀 Create My Site v${version} chargé avec succès !");
+});`;
   fs.writeFileSync(path.join(projectDir, "assets", "js", "script.js"), jsContent);
 
-  console.log(chalk.cyan("📄 Fichiers générés (SEO ready, Assets structurés)."));
+  if (template === "Tailwind CSS") {
+    const tailwindConfigStr = `tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        display: ['Outfit', 'sans-serif'],
+      },
+      colors: {
+        deep: '#050505',
+        cyanNeon: '#00d2ff',
+        violetNeon: '#9d50bb',
+      },
+      backgroundImage: {
+          'mesh': 'radial-gradient(circle at 15% 50%, rgba(157, 80, 187, 0.15), transparent 25%), radial-gradient(circle at 85% 30%, rgba(0, 210, 255, 0.15), transparent 25%)',
+          'grid-pattern': 'linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)',
+          'text-gradient': 'linear-gradient(135deg, #00d2ff, #9d50bb)',
+      }
+    }
+  }
+};`;
+    fs.writeFileSync(path.join(projectDir, "assets", "js", "tailwind.config.js"), tailwindConfigStr);
+  }
+
+  console.log(chalk.cyan(`📄 Fichiers générés (Structure v${version} cohérente).`));
 }

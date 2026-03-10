@@ -1,4 +1,4 @@
-# --- Dépendances Node.js (TRÈS IMPORTANT) ---
+      Dépendances Node.js (TRÈS IMPORTANT) ---
 # On ne versionne jamais ce dossier car il est lourd 
 # et peut être réinstallé avec "npm install"
 node_modules/

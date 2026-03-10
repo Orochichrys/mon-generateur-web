@@ -44,7 +44,7 @@ export default async function InteractiveSetup() {
       name: "local",
       message: "Utiliser des fichiers locaux au lieu des CDN (Offline mode) ?",
       default: false,
-      when: (answers) => answers.template === "Bootstrap 5",
+      when: (answers) => answers.template === "Bootstrap 5" || answers.template === "Tailwind CSS",
     },
     {
       type: "confirm",

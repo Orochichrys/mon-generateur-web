@@ -1,6 +1,6 @@
 {
   "name": "create-my-site",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Un CLI ultra-rapide pour générer des structures web professionnelles.",
   "main": "index.js",
   "type": "module",

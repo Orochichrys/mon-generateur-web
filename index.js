@@ -12,14 +12,15 @@ import InteractiveSetup from "./interactive.js";
 
 // Mapping CLI -> Noms complets
 const AvailableTemplates = {
-  "bootstrap": "Bootstrap 5",
   "tailwind": "Tailwind CSS",
+  "bootstrap": "Bootstrap 5",
   "empty": "Site Vide (HTML/CSS/JS basique)"
 };
 
 // Fonction principale
 async function main(projectName, templateName, options) {
-  const { gitInit, darkMode, push, local, token, serve } = options;
+  const { gitInit, dark, push, local, token, serve } = options;
+  const darkMode = dark;
   
   BuildProjectDir(projectName);
   await GenTemplate(projectName, templateName, VERSION, { darkMode, local });
@@ -53,7 +54,7 @@ program
   .option('-t, --template <T>', "Choix du template (bootstrap, tailwind, empty).", "tailwind")
   .option('--no-init', "Désactive l'initialisation automatique de Git.")
   .option('--dark', "Génère un projet direct en mode sombre.", false)
-  .option('--local', "Télécharge les bibliothèques en local (Bootstrap).", false)
+  .option('--local', "Télécharge les bibliothèques en local (Bootstrap, Tailwind).", false)
   .option('--push', "Crée le dépôt et envoie le code vers GitHub.", false)
   .option('--token <T>', "Passe un GitHub Token temporaire.")
   .option('--serve', "Lance immédiatement le serveur de prévisualisation.", false)

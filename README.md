@@ -2,23 +2,24 @@
 
 > Un outil en ligne de commande (CLI) ultra-rapide pour générer des structures de sites web professionnelles.
 
-Version: **v1.3.0**
+Version: **v1.4.0**
 
 Ce projet permet de créer en quelques secondes un squelette de projet web incluant HTML, CSS, JS, et des dossiers optimisés. Il supporte également l'intégration de **Bootstrap**, **Tailwind CSS**, le **Mode Sombre**, le **SEO automatique** et le **Push GitHub**.
 
-## ✨ Fonctionnalités v1.3.0
+## ✨ Fonctionnalités v1.4.0
 
 - 📁 **Structure Professionnelle** : Dossiers organisés dans `/assets` (`css/`, `js/`, `img/`, `vendor/`).
+- 💎 **Design "Cyber-Elegance"** : Un visuel premium avec Glassmorphism, animations néon et fond texturé.
 - 🔍 **SEO & Open Graph** : Balises Meta et OG-Tags pré-configurés pour le partage social.
-- 🌗 **Mode Sombre** : Support natif du mode sombre pour Tailwind et Bootstrap.
+- 🌗 **Mode Sombre** : Support natif du mode sombre (`--dark`) pour Tailwind et Bootstrap.
 - 🎨 **Templates au choix** :
-  - **Tailwind CSS** : Script inclus + design moderne et responsive.
-  - **Bootstrap 5** : CDN inclus + personnalisation thématique.
-  - **Site Vide** : HTML/CSS/JS pur avec structure assets.
+  - **Tailwind CSS** : Script inclus avec design Cyber-Elegance responsive.
+  - **Bootstrap 5** : CDN ou Local inclus avec composants personnalisés.
+  - **Site Vide (HTML/CSS/JS basique)** : Pure HTML/CSS avec structure complète.
 - 🦊 **Git Ready** : Initialisation `git init` et `.gitignore` par défaut.
-- 🐙 **Auto-Push GitHub** : Crée un dépôt et push le code immédiatement (nécessite `gh`).
-- 🔒 **Local-Lock** : Télécharge les bibliothèques en local (Bootstrap) pour un usage offline.
-- 🌐 **Live Preview** : Lance un serveur local (`localhost:3000`) et ouvre automatiquement le navigateur pour voir ton site instantanément.
+- 🐙 **Auto-Push GitHub** : Crée un dépôt et push le code immédiatement (nécessite `gh` ou `--token`).
+- 🔒 **Local-Lock** : Télécharge les bibliothèques en local (Bootstrap, Tailwind) pour un usage offline.
+- 🌐 **Live Preview** : Lance un serveur local (`localhost:3000`) et ouvre automatiquement le navigateur.
 
 ---
 
@@ -30,11 +31,11 @@ Lancez simplement l'outil sans installation préalable :
 # Pour utiliser la toute dernière version (recommandé)
 npx create-my-site@latest
 
-# Pour utiliser l'ancienne version v1.2.1
-npx create-my-site@1.2.1
+# Pour utiliser la version Cyber-Elegance v1.4.0
+npx create-my-site@1.4.0
 
-# Pour utiliser la première version v1.0.0
-npx create-my-site@1.0.0
+# Pour utiliser l'ancienne version v1.3.0
+npx create-my-site@1.3.0
 ```
 
 ### Lancer le serveur sur un projet existant
@@ -61,14 +62,17 @@ Arguments:
 
 Options:
   -t, --template <T>   Choix du template (bootstrap, tailwind, empty).
-  --dark               Génère un projet direct en mode sombre.
-  --local              Télécharge les bibliothèques en local (Bootstrap).
+  --dark               Active l'attribut HTML natif du mode sombre.
+  --local              Télécharge les bibliothèques en local (Bootstrap, Tailwind).
   --push               Crée le dépôt et envoie le code vers GitHub.
   --token <T>          Passe un GitHub Token temporaire.
   --no-init            Désactive l'initialisation automatique de Git.
   --serve              Lance immédiatement le serveur de prévisualisation.
   -V, --version        Affiche la version actuelle du CLI.
   -h, --help           Affiche l'aide.
+
+Commands:
+  serve [dir]          Lance le serveur de prévisualisation sur un projet existant.
 ```
 
 ## 📄 Licence
