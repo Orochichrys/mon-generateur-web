@@ -48,7 +48,7 @@ async function main(projectName, templateName, options) {
 program
   .version(VERSION)
   .name("create-my-site")
-  .usage("[name] [options]")
+  .usage("[name] [options] | [command]")
   .description("CREATE MY SITE - Un CLI ultra-rapide pour générer des structures web professionnelles.")
   .argument('[name]', "Le nom du projet (facultatif pour lancer le mode interactif)")
   .option('-t, --template <T>', "Choix du template (bootstrap, tailwind, empty).", "tailwind")
